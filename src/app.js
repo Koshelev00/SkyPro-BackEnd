@@ -7,13 +7,13 @@ const server = http.createServer((request, response) => {
   const pathName = parsedUrl.pathname;
   const query = parsedUrl.query;
 
-  if (pathName === "/users") {
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "application/json");
-    response.write(getUsers());
-    response.end();
-    return;
-  }
+if ('users' in query) {
+        response.statusCode = 200;
+        response.setHeader('Content-Type', 'application/json');
+        response.write(getUsers());
+        response.end();
+        return;
+    }
   if ("hello" in query) {
     const nameValue = query.hello;
 
