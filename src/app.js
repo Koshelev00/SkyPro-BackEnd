@@ -30,15 +30,17 @@ if ('users' in query) {
     }
     return;
   }
-  if (pathName === "/") {
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "text/plain");
-    response.write("Hello, World!");
-    response.end();
-  } else {
+  if (pathName === '/' && Object.keys(query).length === 0) {
+        response.statusCode = 200;
+        response.setHeader('Content-Type', 'text/plain');
+        response.write('Hello, World!');
+        response.end();
+        return;
+    }
+
+    
     response.statusCode = 500;
     response.end();
-  }
 });
 
 const port = process.env.PORT || 3003;
