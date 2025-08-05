@@ -49,6 +49,6 @@ server.listen(port, () => {
 });
 
 // http://127.0.0.1:3003/  response:'Hello world'
-// http://127.0.0.1:3003/users  response:users.json
+// http://127.0.0.1:3003/?users  response:users.json
 // http://127.0.0.1:3003/?hello   response: 'Enter a name'
 // http://127.0.0.1:3003/?hello="Name"  response: 'Hello, 'Name'!'
