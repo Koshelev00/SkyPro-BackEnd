@@ -1,54 +1,38 @@
-const http = require("http");
-const url = require("url");
-const getUsers = require("./modules/users");
+const express = require("express");
+const dotenv = require("dotenv");
+const userRouter = require("./routes/users");
+const bookRouter = require("./routes/books")
+const loggerOne = require("./middlewares/loggerOne");
+const loggerTwo = require("./middlewares/loggerTwo");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const mongoose = require("mongoose");
+dotenv.config();
 
-const server = http.createServer((request, response) => {
-  const parsedUrl = url.parse(request.url, true);
-  const pathName = parsedUrl.pathname;
-  const query = parsedUrl.query;
+const { 
+  PORT = process.env.PORT || 3005,
+   API_URL= "http://127.0.0.1",
+   
+  } = process.env;
 
-if ('users' in query) {
-        response.statusCode = 200;
-        response.setHeader('Content-Type', 'application/json');
-        response.write(getUsers());
-        response.end();
-        return;
-    }
-  if ("hello" in query) {
-    const nameValue = query.hello;
+mongoose.connect('mongodb://127.0.0.1:27017/test')
+.then (function(){console.log('Conected')}).
+catch(error => handleError(error));
 
-    if (nameValue && nameValue.trim() !== "") {
-      response.statusCode = 200;
-      response.setHeader("Content-Type", "text/plain");
-      response.write(`Hello, ${nameValue}!`);
-      response.end();
-    } else {
-      response.statusCode = 400;
-      response.setHeader("Content-Type", "text/plain");
-      response.write("Enter a name");
-      response.end();
-    }
-    return;
-  }
-  if (pathName === '/' && Object.keys(query).length === 0) {
-        response.statusCode = 200;
-        response.setHeader('Content-Type', 'text/plain');
-        response.write('Hello, World!');
-        response.end();
-        return;
-    }
+const app = express();
+app.get('/', (request, response) => {
+  response.status(200);
+  response.send('Hello, World!')
+})
 
-    
-    response.statusCode = 500;
-    response.end();
+app.use(cors());
+app.use(bodyParser.json());
+app.use(loggerOne);
+app.use(loggerTwo);
+
+app.use(userRouter);
+app.use(bookRouter)
+
+app.listen(PORT, () => {
+  console.log(`Сервер запущен на ${API_URL}:${PORT}`);
 });
-
-const port = process.env.PORT || 3003;
-server.listen(port, () => {
-  console.log(`Сервер запущен по адресу http://127.0.0.1:${port}`);
-});
-
-// http://127.0.0.1:3003/  response:'Hello world'
-// http://127.0.0.1:3003/?users  response:users.json
-// http://127.0.0.1:3003/?hello   response: 'Enter a name'
-// http://127.0.0.1:3003/?hello="Name"  response: 'Hello, 'Name'!'
